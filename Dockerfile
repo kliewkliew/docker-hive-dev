@@ -8,7 +8,8 @@ ARG DEBUG_PORT=8000
 # MySQL for Hive metastore
 RUN yum install -y mysql-server mysql-connector-java
 RUN service mysqld start && \
-    mysql -e'GRANT ALL ON *.* TO hive@"%" IDENTIFIED BY "hive"; flush privileges;'
+    mysql -e'GRANT ALL PRIVILEGES ON *.* TO hive@"%" IDENTIFIED BY "hive"; flush privileges;' && \
+    mysql -e'GRANT ALL PRIVILEGES ON *.* TO hive@"localhost" IDENTIFIED BY "hive"; flush privileges;'
 
 RUN yum install -y git
 RUN curl -s https://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz | \

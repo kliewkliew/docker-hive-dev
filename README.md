@@ -8,12 +8,12 @@ Docker 1.10 or higher is required to build the image (because of `--build-arg`).
 
 To debug your own fork
 ```
-docker build -t kliew/hive-dev --build-arg REPO=https://github.com/kliewkliew/hive .
+docker build -t kliew/hive --build-arg REPO=https://github.com/kliewkliew/hive .
 ```
 
 To debug from the official repo (ie. for comparing performance of a specific revisions)
 ```
-docker build -t kliew/hive-dev --build-arg REVISION=fb230f9df5b7c990c80326671d9975a6f05e1600 .
+docker build -t kliew/hive --build-arg REVISION=fb230f9df5b7c990c80326671d9975a6f05e1600 .
 ```
 
 #### Build Parameters
