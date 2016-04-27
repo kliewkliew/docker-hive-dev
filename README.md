@@ -4,7 +4,7 @@ Apache Hive in Docker for Hive development
 ## Usage
 
 ### Build
-Docker 1.10 or higher is required to build the image (because of `--build-arg`).
+Docker 1.10 or higher is required to build the image (to use `--build-arg`).
 
 To debug your own fork
 ```
@@ -23,7 +23,6 @@ docker build -t kliew/hive-dev --build-arg REVISION=fb230f9df5b7c990c80326671d99
 * HIVE_OPTS   Override the default Hive configuration
 
 ### Run
-
 To debug locally
 ```
 docker run -it kliew/hive-dev

@@ -40,4 +40,5 @@ EXPOSE 3306 9083 10000
 ARG HIVE_OPTS='-hiveconf mapred.job.tracker=local'
 
 CMD service mysqld start && \
+    $HADOOP_HDFS_HOME/sbin/start-dfs.sh && \
     hive --service hiveserver2 --debug[port=[DEBUG_PORT],mainSuspend=y,childSuspend=y]
