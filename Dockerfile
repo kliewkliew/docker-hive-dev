@@ -37,7 +37,6 @@ RUN service mysqld start && \
 
 EXPOSE 3306 9083 10000
 
-ENV DEBUG_PORT 8000
 ENV HIVE_OPTS '-hiveconf mapred.job.tracker=local'
 
 CMD service mysqld start && \
