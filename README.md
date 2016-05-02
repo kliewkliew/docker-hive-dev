@@ -1,5 +1,5 @@
 # docker-hive-dev
-Apache Hive in Docker for Hive development
+Apache Hive with remote-debugging in Docker for Hive development
 
 ## Usage
 
@@ -22,10 +22,11 @@ docker build -t kliew/hive-dev --build-arg REVISION=fb230f9df5b7c990c80326671d99
 
 ### Run
 ```
-docker run -it -p 10000:10000 -p $HOST_DEBUG_PORT:$CONTAINER_DEBUG_PORT kliew/hive
+docker run -it -p $HOST_DEBUG_PORT:8000 kliew/hive
 ```
+Add `-p 10000:10000` if you want access from an external beeline client.
 
 #### Environment Variables (overridable)
-* DEBUG_PORT  The port to use for debugging Hive. In Eclipse, open Debug Configurations, create Remote Java Application, Host: localhost, Port: 8000.
+* DEBUG_PORT  The port to use for debugging Hive. In Eclipse, open Debug Configurations, create Remote Java Application, Host: localhost, Port: $HOST_DEBUG_PORT.
 * HIVE_OPTS   Override the Hive configuration in the Dockerfile
 
