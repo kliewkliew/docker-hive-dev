@@ -22,12 +22,12 @@ limitations under the License.
     </property>
     <!-- one we created to enable/disable thrift serialization in the SerDe itself. this is for backward comptability -->
     <property>
-     <name>hive.server2.thrift.resulset.serialize.in.tasks</name>
+     <name>hive.server2.thrift.resultset.serialize.in.tasks</name>
      <value>true</value>
     </property>
     <!-- this is not the same fetch size as jdbc. this says what fetch size to use when filling the buffer in the serde. -->
     <property>
-     <name>hive.server2.thrift.resulset.max.fetch.size</name>
+     <name>hive.server2.thrift.resultset.max.fetch.size</name>
      <value>1000</value>
     </property>
     <property>
@@ -68,10 +68,6 @@ limitations under the License.
    <name>javax.jdo.option.ConnectionPassword</name>      
    <value>hive</value> 
    <description>Enter your MySQL credentials. </description>
-  </property>
-  <property>
-    <name>hive.optimize.mapjoin.mapreduce</name>
-    <value>true</value>
   </property>
     <property>
     <name>hive.security.authorization.enabled</name>
@@ -128,10 +124,6 @@ limitations under the License.
     <property>
     <name>hive.auto.convert.sortmerge.join</name>
     <value>true</value>
-  </property>
-    <property>
-    <name>hive.semantic.analyzer.factory.impl</name>
-    <value>org.apache.hivealog.cli.HCatSemanticAnalyzerFactory</value>
   </property>
     <property>
     <name>hive.metastore.cache.pinobjtypes</name>

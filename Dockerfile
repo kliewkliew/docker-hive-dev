@@ -1,10 +1,5 @@
 FROM sequenceiq/hadoop-docker:2.7.1
 
-ARG REPO=https://github.com/apache/hive
-ARG REVISION=master
-
-ARG DEBUG_PORT=8000
-
 # MySQL for Hive metastore
 RUN yum install -y mysql-server mysql-connector-java
 RUN service mysqld start && \
@@ -19,6 +14,9 @@ RUN curl -s https://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-
 ENV M2_HOME=/usr/local/maven
 ENV PATH=${M2_HOME}/bin:${PATH}
 
+ARG REPO=https://github.com/apache/hive
+ARG REVISION=master
+
 RUN git clone $REPO && \
     cd hive && \
     git checkout $REVISION && \
@@ -28,7 +26,9 @@ ENV HIVE_HOME /hive/packaging/target/apache-hive-2.1.0-SNAPSHOT-bin/apache-hive-
 ENV PATH $HIVE_HOME/bin:$PATH
 ENV HIVE_CONF_DIR /hive/packaging/target/apache-hive-2.1.0-SNAPSHOT-bin/apache-hive-2.1.0-SNAPSHOT-bin/conf/
 
-COPY hive-site.xml hive/packaging/target/apache-hive-2.1.0-SNAPSHOT-bin/apache-hive-2.1.0-SNAPSHOT-bin/conf/
+COPY hive-site.xml $HIVE_CONF_DIR
+COPY hive-env.sh $HIVE_CONF_DIR
+COPY hive-log4j2.properties $HIVE_CONF_DIR
 COPY my.cnf /etc/
 
 RUN ln -s /usr/share/java/mysql-connector-java.jar $HIVE_HOME/lib
@@ -37,8 +37,10 @@ RUN service mysqld start && \
 
 EXPOSE 3306 9083 10000
 
-ARG HIVE_OPTS='-hiveconf mapred.job.tracker=local'
+ENV DEBUG_PORT 8000
+ENV HIVE_OPTS '-hiveconf mapred.job.tracker=local'
 
 CMD service mysqld start && \
     $HADOOP_HDFS_HOME/sbin/start-dfs.sh && \
-    hive --service hiveserver2 --debug[port=[DEBUG_PORT],mainSuspend=y,childSuspend=y]
+    hiveserver2
+
