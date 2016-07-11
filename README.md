@@ -17,8 +17,9 @@ docker build -t kliew/hive-dev --build-arg REVISION=fb230f9df5b7c990c80326671d99
 ```
 
 #### Build Parameters
-* REPO        Hive git fork 
-* REVISION    Git revision of $REPO
+* REPO         Hive git fork 
+* REVISION     Git revision of $REPO
+* HIVE_VERSION Ensure this matches the current version number
 
 ### Run
 ```

@@ -22,9 +22,10 @@ RUN git clone $REPO && \
     git checkout $REVISION && \
     mvn clean install -DskipTests -Phadoop-2,dist
 
-ENV HIVE_HOME /hive/packaging/target/apache-hive-2.1.0-SNAPSHOT-bin/apache-hive-2.1.0-SNAPSHOT-bin
+ARG HIVE_VERSION=2.2.0
+ENV HIVE_HOME /hive/packaging/target/apache-hive-$HIVE_VERSION-SNAPSHOT-bin/apache-hive-$HIVE_VERSION-SNAPSHOT-bin
 ENV PATH $HIVE_HOME/bin:$PATH
-ENV HIVE_CONF_DIR /hive/packaging/target/apache-hive-2.1.0-SNAPSHOT-bin/apache-hive-2.1.0-SNAPSHOT-bin/conf/
+ENV HIVE_CONF_DIR /hive/packaging/target/apache-hive-$HIVE_VERSION-SNAPSHOT-bin/apache-hive-$HIVE_VERSION-SNAPSHOT-bin/conf/
 
 COPY hive-site.xml $HIVE_CONF_DIR
 COPY hive-env.sh $HIVE_CONF_DIR
