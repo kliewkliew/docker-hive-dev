@@ -26,11 +26,18 @@ You may have to build with `--no-cache` or specify the revision to use the cache
 
 ### Run
 ```
-docker run -it -p $HOST_DEBUG_PORT:8000 kliew/hive-dev
+docker run -it -p $HOST_DEBUG_PORT:8001 kliew/hive-dev
 ```
 Add `-p 10000:10000` if you want access from an external beeline client.
 
 In Eclipse, open Debug Configurations, create Remote Java Application, Host: localhost, Port: $HOST_DEBUG_PORT.
+
+To debug beeline
+```
+beeline --debug
+```
+
+And debug against port 8000 in Eclipse.
 
 #### Environment Variables (overridable)
 * HIVE_OPTS   Override the Hive configuration in the Dockerfile
