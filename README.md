@@ -22,7 +22,7 @@ You may have to build with `--no-cache` or specify the revision to use the cache
 #### Build Parameters
 * REPO         Hive git fork 
 * REVISION     Git revision of $REPO
-* HIVE_VERSION Ensure this matches the current version number
+* HIVE_VERSION Ensure this matches the version string in hive/pom.xml
 
 ### Run
 ```
