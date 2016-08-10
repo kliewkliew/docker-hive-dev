@@ -16,6 +16,9 @@ To build a specific revision
 docker build -t kliew/hive-dev --build-arg REVISION=fb230f9df5b7c990c80326671d9975a6f05e1600 .
 ```
 
+You may have to build with `--no-cache`
+
+
 #### Build Parameters
 * REPO         Hive git fork 
 * REVISION     Git revision of $REPO
