@@ -23,7 +23,7 @@ docker build -t kliew/hive-dev --build-arg REVISION=fb230f9df5b7c990c80326671d99
 
 ### Run
 ```
-docker run -it -p $HOST_DEBUG_PORT:8000 kliew/hive
+docker run -it -p $HOST_DEBUG_PORT:8000 kliew/hive-dev
 ```
 Add `-p 10000:10000` if you want access from an external beeline client.
 
