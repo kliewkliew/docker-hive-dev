@@ -19,13 +19,13 @@ ARG REPO=https://github.com/apache/hive
 RUN git clone $REPO
 ENV MAVEN_OPTS="-Xmx2048m -XX:MaxPermSize=256m -XX:+CMSClassUnloadingEnabled -Dmaven.artifact.threads=1000 "
 WORKDIR hive
-RUN mvn -T 1000C clean install -DskipTests
+RUN mvn -T 1000C clean install -DskipTests -Phadoop-2,dist
 
 # Update and build
 ARG REVISION=master
 RUN git pull && \
     git checkout $REVISION && \
-    mvn -T 1.5C clean install -DskipTests -o
+    mvn -T 1.5C clean install -DskipTests -Phadoop-2,dist -o
 
 WORKDIR /
 
