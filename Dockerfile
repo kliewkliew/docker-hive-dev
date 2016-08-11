@@ -14,13 +14,20 @@ RUN curl -s https://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-
 ENV M2_HOME=/usr/local/maven
 ENV PATH=${M2_HOME}/bin:${PATH}
 
+# Cache download of repo and dependencies and unmodified modules
 ARG REPO=https://github.com/apache/hive
-ARG REVISION=master
+RUN git clone $REPO
+ENV MAVEN_OPTS="-Xmx2048m -XX:MaxPermSize=256m -XX:+CMSClassUnloadingEnabled -Dmaven.artifact.threads=1000 "
+WORKDIR hive
+RUN mvn -T 1000C clean install -DskipTests
 
-RUN git clone $REPO && \
-    cd hive && \
+# Update and build
+ARG REVISION=master
+RUN git pull && \
     git checkout $REVISION && \
-    mvn clean install -DskipTests -Phadoop-2,dist
+    mvn -T 1.5C clean install -DskipTests -o
+
+WORKDIR /
 
 ARG HIVE_VERSION=2.2.0
 ENV HIVE_HOME /hive/packaging/target/apache-hive-$HIVE_VERSION-SNAPSHOT-bin/apache-hive-$HIVE_VERSION-SNAPSHOT-bin
@@ -43,4 +50,3 @@ ENV HIVE_OPTS '-hiveconf mapred.job.tracker=local'
 CMD service mysqld start && \
     $HADOOP_HDFS_HOME/sbin/start-dfs.sh && \
     hiveserver2
-
