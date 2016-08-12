@@ -16,7 +16,7 @@ To build a specific revision
 docker build -t kliew/hive-dev --build-arg REVISION=fb230f9df5b7c990c80326671d9975a6f05e1600 .
 ```
 
-You may have to build with `--no-cache` or specify the revision to use the cache up until the `git clone ~` step.
+You may have to build with `--no-cache`  but in most cases you can just specify the revision to use the cache up until the `git clone ~` step, after which the build process will do `git pull` and checkout the specified revision.
 
 
 #### Build Parameters
