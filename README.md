@@ -34,7 +34,7 @@ In Eclipse, open Debug Configurations, create Remote Java Application, Host: loc
 
 To debug beeline, run the image with `-p $HOST_BEELINE_DEBUG_PORT:8000` and start beeline with:
 ```
-docker exec -it <container id/name> beeline --debug
+docker exec -it <container id/name> beeline --debug <other options>
 ```
 
 And debug against $HOST_BEELINE_DEBUG_PORT in Eclipse.
