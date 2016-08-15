@@ -27,19 +27,22 @@ RUN git pull && \
     git checkout $REVISION && \
     mvn -T 1.5C clean install -DskipTests -Phadoop-2,dist -o
 
-WORKDIR /
-
 ARG HIVE_VERSION=2.2.0
 ENV HIVE_HOME /hive/packaging/target/apache-hive-$HIVE_VERSION-SNAPSHOT-bin/apache-hive-$HIVE_VERSION-SNAPSHOT-bin
 ENV PATH $HIVE_HOME/bin:$PATH
 ENV HIVE_CONF_DIR /hive/packaging/target/apache-hive-$HIVE_VERSION-SNAPSHOT-bin/apache-hive-$HIVE_VERSION-SNAPSHOT-bin/conf/
+
+COPY SnappyCompDe /
+WORKDIR /SnappyCompDe
+RUN mvn clean install && \
+    cp target/snappy-compde-1.0-SNAPSHOT.jar $HIVE_HOME/lib
 
 COPY hive-site.xml $HIVE_CONF_DIR
 COPY hive-env.sh $HIVE_CONF_DIR
 COPY hive-log4j2.properties $HIVE_CONF_DIR
 COPY my.cnf /etc/
 
-RUN ln -s /usr/share/java/mysql-connector-java.jar $HIVE_HOME/lib
+RUN ln -s /usr/share/java/mysql-connector-java.jar ccccccc
 RUN service mysqld start && \
     schematool -dbType mysql -initSchema -verbose
 

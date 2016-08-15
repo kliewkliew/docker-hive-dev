@@ -15,6 +15,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <configuration>
+    <property>
+      <name>hive.server2.thrift.resultset.compressor.list</name>
+      <value>snappy.snappy</value>
+    </property>
+
     <!-- this property is useful when you want to change the default beeline port, which is 10000 -->   
     <property>
       <name>hive.server2.thrift.port</name>
