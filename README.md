@@ -7,7 +7,7 @@ Development environment for HIVE-13680.
 Docker 1.10 or higher is required to build the image (to use `--build-arg`).
 
 ```
-docker build -t kliew/hive-dev --build-arg REPO=https://github.com/kliewkliew/hive --build-arg REVISION=rebase-2 --no-cache .
+docker build -t kliew/hive-dev --build-arg REPO=https://github.com/kliewkliew/hive --build-arg REVISION=rebase-4 --no-cache .
 ```
 
 ### Run
