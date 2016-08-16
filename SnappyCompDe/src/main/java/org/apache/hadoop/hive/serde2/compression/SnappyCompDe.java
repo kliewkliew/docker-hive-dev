@@ -41,20 +41,29 @@ import org.xerial.snappy.Snappy;
 
 public class SnappyCompDe implements CompDe {
 
+  
   /**
    * Initialize the plug-in by overlaying the input configuration map
    * onto the plug-in's default configuration.
    * 
    * @param config Overlay configuration map
    * 
-   * @return The final configuration map is initialization was successful.
-   *         `null` if initialization failed.
+   * @return True is initialization was successful
    */
   @Override
-  public Map<String, String> init(Map<String, String> config) {
+  public boolean init(Map<String, String> config) {
+    return true;
+  }
+  
+  /**
+   * Return the configuration settings of the CompDe
+   * 
+   * @return
+   */
+  public Map<String, String> getConfig() {
     return new HashMap<String, String>();
   }
-
+  
   /**
    * Compress a set of columns.
    * 1. write the number of columns
@@ -388,4 +397,3 @@ public class SnappyCompDe implements CompDe {
   }
 
 }
-
