@@ -32,7 +32,7 @@ ENV HIVE_HOME /hive/packaging/target/apache-hive-$HIVE_VERSION-SNAPSHOT-bin/apac
 ENV PATH $HIVE_HOME/bin:$PATH
 ENV HIVE_CONF_DIR /hive/packaging/target/apache-hive-$HIVE_VERSION-SNAPSHOT-bin/apache-hive-$HIVE_VERSION-SNAPSHOT-bin/conf/
 
-COPY SnappyCompDe /
+COPY SnappyCompDe /SnappyCompDe
 WORKDIR /SnappyCompDe
 RUN mvn clean install && \
     cp target/snappy-compde-1.0-SNAPSHOT.jar $HIVE_HOME/lib
