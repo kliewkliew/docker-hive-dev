@@ -60,6 +60,7 @@ public class SnappyCompDe implements CompDe {
    * 
    * @return
    */
+  @Override
   public Map<String, String> getConfig() {
     return new HashMap<String, String>();
   }
