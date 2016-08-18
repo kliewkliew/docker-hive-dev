@@ -36,13 +36,14 @@ COPY SnappyCompDe /
 WORKDIR /SnappyCompDe
 RUN mvn clean install && \
     cp target/snappy-compde-1.0-SNAPSHOT.jar $HIVE_HOME/lib
+WORKDIR /
 
 COPY hive-site.xml $HIVE_CONF_DIR
 COPY hive-env.sh $HIVE_CONF_DIR
 COPY hive-log4j2.properties $HIVE_CONF_DIR
 COPY my.cnf /etc/
 
-RUN ln -s /usr/share/java/mysql-connector-java.jar ccccccc
+RUN ln -s /usr/share/java/mysql-connector-java.jar $HIVE_HOME/lib
 RUN service mysqld start && \
     schematool -dbType mysql -initSchema -verbose
 
