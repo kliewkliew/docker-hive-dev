@@ -20,6 +20,10 @@ package org.apache.hadoop.hive.serde2.compression;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.DoubleBuffer;
+import java.nio.IntBuffer;
+import java.nio.LongBuffer;
+import java.nio.ShortBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,31 +37,31 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.hadoop.hive.serde2.SerDeException;
 import org.apache.hadoop.hive.serde2.thrift.ColumnBuffer;
 import org.apache.hive.service.rpc.thrift.*;
-import org.xerial.snappy.Snappy;
+import org.iq80.snappy.Snappy;
 
 public class SnappyCompDe implements CompDe {
 
   /**
-   * Initialize the plug-in by overlaying the input configuration map
-   * onto the plug-in's default configuration.
-   *
-   * @param config Overlay configuration map.
-   *
-   * @return True is initialization was successful.
+   * Negotiate the server and client plug-in parameters.
+   * parameters.
+   * @param serverParams The server's default parameters for this plug-in.
+   * @param clientParams The client's requested parameters for this plug-in.
+   * @throws Exception if the plug-in failed to initialize.
    */
-  @Override
-  public boolean init(Map<String, String> config) {
-    return true;
+  public Map<String, String> getParams(
+      Map<String,String> serverParams,
+      Map<String,String> clientParams)
+          throws Exception {
+    return serverParams;
   }
 
   /**
    * Get the configuration settings of the CompDe after it has been initialized.
-   *
    * @return The CompDe configuration.
    */
   @Override
-  public Map<String, String> getConfig() {
-    return new HashMap<String, String>();
+  public void init(Map<String,String> params) {
+    return;
   }
 
   /**
@@ -65,22 +69,22 @@ public class SnappyCompDe implements CompDe {
    *
    * The header contains a compressed array of data types.
    * The body contains compressed columns and their metadata.
-   * The footer contains a compressed array of chunk sizes. 
-   * The final four bytes of the footer encode the byte size of that 
+   * The footer contains a compressed array of chunk sizes.
+   * The final four bytes of the footer encode the byte size of that
    *   compressed array.
    *
    * @param colSet The set of columns to be compressed.
    *
    * @return ByteBuffer representing the compressed set.
-   * @throws IOException 
-   * @throws SerDeException 
+   * @throws IOException on failure to compress.
+   * @throws SerDeException on invalid ColumnBuffer metadata.
    */
   @Override
   public ByteBuffer compress(ColumnBuffer[] colSet)
       throws IOException, SerDeException {
 
     // Many compression libraries let you avoid allocation of intermediate arrays.
-    // To use these API, we preallocate the output container.
+    // To use these API, we pre-compute the size of the output container.
 
     // Reserve space for the header.
     int[] dataType = new int[colSet.length];
@@ -292,9 +296,9 @@ public class SnappyCompDe implements CompDe {
    * @param output The buffer to append with the compressed bytes.
    *
    * @return The number of bytes written.
-   * @throws IOException
+   * @throws IOException on failure to write compressed data.
    */
-  private int writeBoxedBytes(List<Byte> boxedVals, ByteBuffer output) throws IOException {
+  private int writeBoxedBytes(List<Byte> boxedVals, ByteBuffer output)throws IOException {
     return writePrimitives(ArrayUtils.toPrimitive(boxedVals.toArray(new Byte[0])), output);
   }
   private int writeBoxedShorts(List<Short> boxedVals, ByteBuffer output) throws IOException {
@@ -318,30 +322,42 @@ public class SnappyCompDe implements CompDe {
    * @param output The buffer to append with the compressed bytes.
    *
    * @return The number of bytes written.
-   * @throws IOException
+   * @throws IOException on failure to write compressed data.
    */
   private int writePrimitives(byte[] primitives, ByteBuffer output) throws IOException {
-    int bytesWritten = Snappy.rawCompress(primitives, 0, primitives.length, output.array(), output.arrayOffset() + output.position());
+    int bytesWritten = Snappy.compress(primitives, 0, primitives.length, output.array(), output.arrayOffset() + output.position());
     output.position(output.position() + bytesWritten);
     return bytesWritten;
   }
   private int writePrimitives(short[] primitives, ByteBuffer output) throws IOException {
-    int bytesWritten = Snappy.rawCompress(primitives, 0, primitives.length * Short.SIZE / Byte.SIZE, output.array(), output.arrayOffset() + output.position());
+    ByteBuffer buffer = ByteBuffer.allocate(primitives.length * Short.SIZE / Byte.SIZE);
+    ShortBuffer view = buffer.asShortBuffer();
+    view.put(primitives);
+    int bytesWritten = Snappy.compress(buffer.array(), 0, buffer.capacity(), output.array(), output.arrayOffset() + output.position());
     output.position(output.position() + bytesWritten);
     return bytesWritten;
   }
   private int writePrimitives(int[] primitives, ByteBuffer output) throws IOException {
-    int bytesWritten = Snappy.rawCompress(primitives, 0, primitives.length * Integer.SIZE / Byte.SIZE, output.array(), output.arrayOffset() + output.position());
+    ByteBuffer buffer = ByteBuffer.allocate(primitives.length * Integer.SIZE / Byte.SIZE);
+    IntBuffer view = buffer.asIntBuffer();
+    view.put(primitives);
+    int bytesWritten = Snappy.compress(buffer.array(), 0, buffer.capacity(), output.array(), output.arrayOffset() + output.position());
     output.position(output.position() + bytesWritten);
     return bytesWritten;
   }
   private int writePrimitives(long[] primitives, ByteBuffer output) throws IOException {
-    int bytesWritten = Snappy.rawCompress(primitives, 0, primitives.length * Long.SIZE / Byte.SIZE, output.array(), output.arrayOffset() + output.position());
+    ByteBuffer buffer = ByteBuffer.allocate(primitives.length * Long.SIZE / Byte.SIZE);
+    LongBuffer view = buffer.asLongBuffer();
+    view.put(primitives);
+    int bytesWritten = Snappy.compress(buffer.array(), 0, buffer.capacity(), output.array(), output.arrayOffset() + output.position());
     output.position(output.position() + bytesWritten);
     return bytesWritten;
   }
   private int writePrimitives(double[] primitives, ByteBuffer output) throws IOException {
-    int bytesWritten = Snappy.rawCompress(primitives, 0, primitives.length * Double.SIZE / Byte.SIZE, output.array(), output.arrayOffset() + output.position());
+    ByteBuffer buffer = ByteBuffer.allocate(primitives.length * Double.SIZE / Byte.SIZE);
+    DoubleBuffer view = buffer.asDoubleBuffer();
+    view.put(primitives);
+    int bytesWritten = Snappy.compress(buffer.array(), 0, buffer.capacity(), output.array(), output.arrayOffset() + output.position());
     output.position(output.position() + bytesWritten);
     return bytesWritten;
   }
@@ -356,8 +372,8 @@ public class SnappyCompDe implements CompDe {
    *                  the input buffer.
    *
    * @return The set of columns.
-   * @throws IOException 
-   * @throws SerDeException 
+   * @throws IOException on failure to decompress.
+   * @throws SerDeException on invalid ColumnBuffer metadata.
    */
   @Override
   public ColumnBuffer[] decompress(ByteBuffer input, int chunkSize) throws IOException, SerDeException {
@@ -365,13 +381,11 @@ public class SnappyCompDe implements CompDe {
 
     // Read the footer.
     int footerSize = input.getInt(startPos + chunkSize - 4);
+    ByteBuffer footerView = input.slice();
+    footerView.position(startPos + chunkSize - Integer.SIZE / Byte.SIZE - footerSize);
+    int[] compressedSizePrimitives = readIntegers(footerSize, footerView);
     Iterator<Integer> compressedSize =
-        Arrays.asList(ArrayUtils.toObject(
-            Snappy.uncompressIntArray(
-                input.array(),
-                input.arrayOffset() + startPos + chunkSize - Integer.SIZE / Byte.SIZE - footerSize,
-                footerSize)))
-        .iterator();
+        Arrays.asList(ArrayUtils.toObject(compressedSizePrimitives)).iterator();
 
     // Read the header.
     int[] dataType = readIntegers(compressedSize.next(), input);
@@ -474,40 +488,63 @@ public class SnappyCompDe implements CompDe {
    * @param input     The buffer to read from.
    *
    * @return An array of primitives.
-   * @throws IOException
+   * @throws IOException on failure to decompress.
    */
   private byte[] readBytes(int chunkSize, ByteBuffer input) throws IOException {
-    byte[] vals = new byte[Snappy.uncompressedLength(input.array(), input.arrayOffset() + input.position(), chunkSize)];
-    Snappy.uncompress(input.array(), input.arrayOffset() + input.position(), chunkSize, vals, 0);
+    byte[] uncompressedBytes = new byte[Snappy.getUncompressedLength(input.array(), input.arrayOffset() + input.position())];
+    Snappy.uncompress(input.array(), input.arrayOffset() + input.position(), chunkSize, uncompressedBytes, 0);
     input.position(input.position() + chunkSize);
-    return vals;
+    return uncompressedBytes;
   }
   private short[] readShorts(int chunkSize, ByteBuffer input) throws IOException {
-    short[] vals = Snappy.uncompressShortArray(input.array(), input.arrayOffset() + input.position(), chunkSize);
+    byte[] uncompressedBytes = new byte[Snappy.getUncompressedLength(input.array(), input.arrayOffset() + input.position())];
+    Snappy.uncompress(input.array(), input.arrayOffset() + input.position(), chunkSize, uncompressedBytes, 0);
+    ShortBuffer view = ByteBuffer.wrap(uncompressedBytes).asShortBuffer();
+    short[] vals = new short[view.capacity()];
+    view.get(vals);
     input.position(input.position() + chunkSize);
     return vals;
   }
   private int[] readIntegers(int chunkSize, ByteBuffer input) throws IOException {
-    int[] vals = Snappy.uncompressIntArray(input.array(), input.arrayOffset() + input.position(), chunkSize);
+    byte[] uncompressedBytes = new byte[Snappy.getUncompressedLength(input.array(), input.arrayOffset() + input.position())];
+    Snappy.uncompress(input.array(), input.arrayOffset() + input.position(), chunkSize, uncompressedBytes, 0);
+    IntBuffer view = ByteBuffer.wrap(uncompressedBytes).asIntBuffer();
+    int[] vals = new int[view.capacity()];
+    view.get(vals);
     input.position(input.position() + chunkSize);
     return vals;
   }
   private long[] readLongs(int chunkSize, ByteBuffer input) throws IOException {
-    long[] vals = Snappy.uncompressLongArray(input.array(), input.arrayOffset() + input.position(), chunkSize);
+    byte[] uncompressedBytes = new byte[Snappy.getUncompressedLength(input.array(), input.arrayOffset() + input.position())];
+    Snappy.uncompress(input.array(), input.arrayOffset() + input.position(), chunkSize, uncompressedBytes, 0);
+    LongBuffer view = ByteBuffer.wrap(uncompressedBytes).asLongBuffer();
+    long[] vals = new long[view.capacity()];
+    view.get(vals);
     input.position(input.position() + chunkSize);
     return vals;
   }
   private double[] readDoubles(int chunkSize, ByteBuffer input) throws IOException {
-    byte[] doubleBytes = new byte[chunkSize];
-    System.arraycopy(input.array(), input.arrayOffset() + input.position(), doubleBytes, 0, chunkSize);
-    double[] vals = Snappy.uncompressDoubleArray(doubleBytes);
+    byte[] uncompressedBytes = new byte[Snappy.getUncompressedLength(input.array(), input.arrayOffset() + input.position())];
+    Snappy.uncompress(input.array(), input.arrayOffset() + input.position(), chunkSize, uncompressedBytes, 0);
+    DoubleBuffer view = ByteBuffer.wrap(uncompressedBytes).asDoubleBuffer();
+    double[] vals = new double[view.capacity()];
+    view.get(vals);
     input.position(input.position() + chunkSize);
     return vals;
   }
 
   /**
-   *
-   * @return The plug-in name
+   * Provide a namespace for the plug-in.
+   * @return The vendor name.
+   */
+  @Override
+  public String getVendor() {
+    return "hive";
+  }
+
+  /**
+   * Provide a name for the plug-in.
+   * @return The plug-in name.
    */
   @Override
   public String getName(){
@@ -515,13 +552,12 @@ public class SnappyCompDe implements CompDe {
   }
 
   /**
-   * Provide a namespace for the plug-in
-   *
-   * @return The vendor name
+   * Provide the version of the plug-in.
+   * @return The plug-in version.
    */
-  @Override
-  public String getVendor() {
-    return "hive";
+  public String getVersion() {
+    return "1.0.0";
   }
 
 }
+
