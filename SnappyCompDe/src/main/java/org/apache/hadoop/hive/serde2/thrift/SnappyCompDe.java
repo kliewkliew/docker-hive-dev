@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.hive.serde2.compression;
+package org.apache.hadoop.hive.serde2.thrift;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
